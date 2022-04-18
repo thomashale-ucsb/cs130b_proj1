@@ -119,7 +119,7 @@ class QuickHull {
     // quickhull has the initial dividing step and the recursive steps, where we check the furthest point, make lines to that point,
     // and then do it again. 
     //On second thought, we aren't going to add another input for ignoreVals. It doesn't work with 1 million points.
-    void quickHullMain(int size, std::pair<double,double> lineP1, std::pair<double, double> lineP2, int side /*, std::unordered_set<int> ignoreVals */) {
+    void quickHullMain(int size, std::pair<double,double> lineP1, std::pair<double, double> lineP2, int side, int index) {
         int indx = -1; //for the side stuff
         int maxDist = 0; //for finding the furthest point
         int currDist;
@@ -141,16 +141,16 @@ class QuickHull {
         // ie, the thingy reaches the end w/o finding anything, so it puts the stuff into the convex hull set.
         // This is for redundancy.
         if (indx == -1) {
-            convexHull.insert(std::make_pair(lineP1,indx));
-            convexHull.insert(std::make_pair(lineP2,indx));
+            convexHull.insert(std::make_pair(lineP1,index));
+            convexHull.insert(std::make_pair(lineP2,index));
             return;
         }
 
         //recursion part
         // we need to check whether there are any points that need to be added on the left and right sides
         // of the point just added, hence this step:
-        quickHullMain(size, lineP1, pointDex[indx], -whichSide(pointDex[indx], lineP1, lineP2));
-        quickHullMain(size, lineP2, pointDex[indx], -whichSide(pointDex[indx], lineP2, lineP1));
+        quickHullMain(size, lineP1, pointDex[indx], -whichSide(pointDex[indx], lineP1, lineP2),indx);
+        quickHullMain(size, lineP2, pointDex[indx], -whichSide(pointDex[indx], lineP2, lineP1),indx);
     }
     
     // really we only need how many points to use to construct the Convex Hull
@@ -166,6 +166,8 @@ class QuickHull {
         // find the first points, min and max x.
         std::pair<double,double> minX = pointDex[0];
         std::pair<double,double> maxX = pointDex[0];
+        int minXIndx = 0;
+        int maxXIndx = 0;
 
         for (int i = 0; i < size; i++) {
             if (minX > pointDex[i]) {
@@ -173,20 +175,22 @@ class QuickHull {
             } else if (minX == pointDex[i]) {
                 if (minX.second > pointDex[i].second) {
                     minX = pointDex[i];
+                    minXIndx = i;
                 }
             } else if (maxX < pointDex[i]) {
                 maxX = pointDex[i];
             } else if (maxX == pointDex[i]) {
                 if (maxX.second < pointDex[i].second) {
                     maxX = pointDex[i];
+                    maxXIndx = i;
                 }
             }
         }
         // one side
-        quickHullMain(size, minX, maxX, 1);
+        quickHullMain(size, minX, maxX, 1, maxXIndx);
     
         // and thee other side
-        quickHullMain(size, minX, maxX, -1);
+        quickHullMain(size, minX, maxX, -1, minXIndx);
 
 
 
@@ -205,7 +209,7 @@ class QuickHull {
         
         // and now output everything
         for (auto itr : angleOrder) {
-        std::cout << itr.second << "," << pointDex[itr.second].first << "," << pointDex[itr.second].second;
+        std::cout << itr.second << "," << pointDex[itr.second].first << "," << pointDex[itr.second].second << std::endl;
         }
     }
 

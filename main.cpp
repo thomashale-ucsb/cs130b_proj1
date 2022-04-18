@@ -10,9 +10,9 @@ int main() {
     double x;
     double y;
     std::vector<std::pair<double,double>> pointList;
-    //cin will run from 0 to n-1:
+    //cin will run from 0 to
     for (int i = 0; i < size; i++) {
-        std:std::cin >> holdString;
+        std::cin >> holdString;
         // now parse the string properly:
         std::stringstream doubleString(holdString);
                 while (std::getline(doubleString, segment, ',')) {
