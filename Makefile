@@ -1,6 +1,6 @@
 CXX=g++
 
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
+CXXFLAGS = -std=c++11 -Wall -Wextra -g
 
 #-Wno-unused-parameter -Wno-unused-private-field
 

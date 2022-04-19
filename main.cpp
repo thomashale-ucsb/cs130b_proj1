@@ -43,7 +43,7 @@ int main() {
     // and now enter it into the quickHull object
     QuickHull hull(pointList);
     // then do the quickhull operation
-    hull.quickHullHandler(size);
+    hull.quickHullHandler();
     // and now, the magic
     hull.outputCV();
 

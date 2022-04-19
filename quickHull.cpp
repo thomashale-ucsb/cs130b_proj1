@@ -47,12 +47,13 @@ class QuickHull {
     std::vector<std::pair<double,double>> pointDex;
     std::set<std::pair<std::pair<double,double>,int>, cmpCVStruct> convexHull;
     std::set<std::pair<std::pair<double,double>,int>, cmpAngleStruct> angleOrder; // (angle, distance from center), input index
-
+    int size;
     
     public:
     // Will add all points into the point vector, from the default txt file (points_100.txt)
     QuickHull(std::vector<std::pair<double,double>> inputs) {
         inputPoints(inputs);
+        this->size = inputs.size();
     }
     // Adds all points in the specified txt file into the point vector.
     QuickHull(std::string pointsTxt){
@@ -70,6 +71,9 @@ class QuickHull {
         std::ifstream myfile(pointsTxt);
 
         if (myfile.is_open()) {
+            //initial run for size of thingy
+            std::getline(myfile, line);
+            this->size = std::stod(line);
             while ( std::getline(myfile, line) ) {
                 // the line is now gotten, so time to push into the vector
                 // inspiration from stackoverflow very nice, link is:
@@ -154,7 +158,7 @@ class QuickHull {
     }
     
     // really we only need how many points to use to construct the Convex Hull
-    void quickHullHandler(int size) {
+    void quickHullHandler() {
         //first, wipe the stuff in convexHull:
         convexHull.clear();
 
