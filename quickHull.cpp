@@ -176,6 +176,7 @@ class QuickHull {
         for (int i = 0; i < size; i++) {
             if (minX > pointDex[i]) {
                 minX = pointDex[i];
+                minXIndx = i;
             } else if (minX == pointDex[i]) {
                 if (minX.second > pointDex[i].second) {
                     minX = pointDex[i];
@@ -183,6 +184,7 @@ class QuickHull {
                 }
             } else if (maxX < pointDex[i]) {
                 maxX = pointDex[i];
+                maxXIndx = i;
             } else if (maxX == pointDex[i]) {
                 if (maxX.second < pointDex[i].second) {
                     maxX = pointDex[i];
