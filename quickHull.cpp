@@ -136,7 +136,7 @@ class QuickHull {
         for (int i = 0; i < size; i++) {
             currDist = pointToLineDist(lineP1, lineP2, pointDex[i]);
             //hopefully this part reducess the overhead. My previous idea definitely did not lmao
-            if (whichSide(lineP1, lineP2, pointDex[i]) == side && currDist ) {
+            if (whichSide(lineP1, lineP2, pointDex[i]) == side && currDist > maxDist) {
                 indx = i;
                 maxDist = currDist;
             }
