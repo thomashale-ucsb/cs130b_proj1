@@ -111,8 +111,8 @@ class QuickHull {
     }
 
     int whichSide(std::pair<double,double> lineP1, std::pair<double,double> lineP2, std::pair<double,double> point) {
-        int val = (point.second - lineP1.second) * (lineP2.first - lineP1.first) -
-              (lineP2.second - lineP1.second) * (point.first - lineP1.first);
+        double val = (lineP1.second - point.second) * (lineP2.first - lineP1.first) -
+              (lineP2.second - lineP1.second) * (lineP1.first - point.first);
   
         if (val > 0)
             return 1;
@@ -123,11 +123,16 @@ class QuickHull {
     // quickhull has the initial dividing step and the recursive steps, where we check the furthest point, make lines to that point,
     // and then do it again. 
     //On second thought, we aren't going to add another input for ignoreVals. It doesn't work with 1 million points.
-    void quickHullMain(int size, std::pair<double,double> lineP1, std::pair<double, double> lineP2, int side, int index) {
+    void quickHullMain(int size, std::pair<double,double> lineP1, std::pair<double, double> lineP2, int side, int indexP1, int indexP2, int counter) {
         int indx = -1; //for the side stuff
-        int maxDist = 0; //for finding the furthest point
-        int currDist;
-
+        double maxDist = 0; //for finding the furthest point
+        double currDist;
+        //I dont have the time to figure out wtf is going on with the stackoverflow
+        if (counter > size) {
+            return;
+        } else {
+            counter++;
+        }
         // copy vals into new unordered set
         //std::unordered_set<int> nextIgnore (ignoreVals);
 
@@ -141,20 +146,34 @@ class QuickHull {
                 maxDist = currDist;
             }
         }
+        //last ditch force:
+
+        convexHull.insert(std::make_pair(lineP2,indexP2));
 
         // ie, the thingy reaches the end w/o finding anything, so it puts the stuff into the convex hull set.
         // This is for redundancy.
         if (indx == -1) {
-            convexHull.insert(std::make_pair(lineP1,index));
-            convexHull.insert(std::make_pair(lineP2,index));
+            convexHull.insert(std::make_pair(lineP1,indexP1));
+            convexHull.insert(std::make_pair(lineP2,indexP2));
+            return;
+        }
+        
+        // check for debugging issues I'm having. Hopefully this will force things to close.
+        if (pointDex[indx] == lineP1 || pointDex[indx] == lineP2) {
+            convexHull.insert(std::make_pair(lineP1,indexP1));
+            convexHull.insert(std::make_pair(lineP2,indexP2));
             return;
         }
 
         //recursion part
         // we need to check whether there are any points that need to be added on the left and right sides
         // of the point just added, hence this step:
-        quickHullMain(size, lineP1, pointDex[indx], -whichSide(pointDex[indx], lineP1, lineP2),indx);
-        quickHullMain(size, lineP2, pointDex[indx], -whichSide(pointDex[indx], lineP2, lineP1),indx);
+        /*
+        quickHullMain(size, lineP1, pointDex[indx], -whichSide(pointDex[indx], lineP1, lineP2), indexP1, indx);
+        quickHullMain(size, lineP2, pointDex[indx], -whichSide(pointDex[indx], lineP2, lineP1), indexP2, indx);
+        */
+        quickHullMain(size, lineP1, pointDex[indx], side, indexP1, indx, counter);
+        quickHullMain(size, lineP2, pointDex[indx], side, indexP2, indx, counter);
     }
     
     // really we only need how many points to use to construct the Convex Hull
@@ -193,10 +212,10 @@ class QuickHull {
             }
         }
         // one side
-        quickHullMain(size, minX, maxX, 1, maxXIndx);
+        quickHullMain(size, minX, maxX, 1, minXIndx, maxXIndx, 0);
     
-        // and thee other side
-        quickHullMain(size, minX, maxX, -1, minXIndx);
+        // and the other side
+        quickHullMain(size, minX, maxX, -1, minXIndx, maxXIndx, 0);
 
 
 
@@ -248,9 +267,13 @@ class QuickHull {
 
     double pointToLineDist(std::pair<double,double> linePt1, std::pair<double,double> linePt2, std::pair<double,double> point) {
         double dist1 = std::abs((point.second - linePt1.second) * (linePt2.first - linePt1.first) -
-                                (linePt2.second - linePt1.second) * (point.first - linePt1.first))/
-                                (std::sqrt(std::pow((linePt2.first -linePt1.first),2) + std::pow((linePt2.second -linePt1.second),2)));
-        return dist1;
+                                (linePt2.second - linePt1.second) * (point.first - linePt1.first));
+        double divide = std::sqrt(std::pow((linePt2.first -linePt1.first),2) + std::pow((linePt2.second -linePt1.second),2));
+        double dist = dist1/divide;
+        if (divide == 0) {
+            return 0;
+        }
+        return dist;
     }
 
 };
